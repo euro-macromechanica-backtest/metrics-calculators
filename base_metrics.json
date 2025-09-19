@@ -1,0 +1,934 @@
+{
+  "about": "This schema applies to tracks where the institutional core metrics are computed (Core Metrics - Institutional Minimal Set): compounding tracks (Full Period and Calendar Year/YTD) and fixed-start tracks (Calendar Year/YTD). All time anchors are in UTC. Sample standard deviations use ddof=1. NaN/Inf and minimum-sample policies are specified in methodology. Disambiguation: 'Annualized, Full Period' != 'Calendar Year, Annualized'. Schema ID: base_metrics.",
+  "csv_schemas": {
+    "compounding_eoy_soy_base_100k": {
+      "full_period_summary.csv": {
+        "columns": [
+          {
+            "desc": "Number of months in series (full period length).",
+            "name": "months",
+            "type": "int"
+          },
+          {
+            "desc": "Full-period CAGR.",
+            "label": "CAGR (Full Period)",
+            "name": "cagr_full_period",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Annualized volatility from monthly returns.",
+            "label": "Volatility (Annualized, Full Period)",
+            "name": "volatility_annualized_full_period",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Annualized Sharpe; rf=0 unless specified.",
+            "label": "Sharpe (Annualized, Full Period)",
+            "name": "sharpe_ratio_annualized_full_period",
+            "type": "float"
+          },
+          {
+            "desc": "Sortino Ratio (annualized): (mean(r_m - t_m) / downside_std_m) * sqrt(12); default target t_m=0.  Target: default t_m=0 (institutional). Optionally use risk-free or MAR (annual) converted to monthly; undefined (NaN) if <2 negative months.",
+            "label": "Sortino (Annualized, Full Period)",
+            "name": "sortino_ratio_annualized_full_period",
+            "type": "float"
+          },
+          {
+            "desc": "cagr_full_period / |eom_max_drawdown_full_period| over the full period.",
+            "label": "Calmar Ratio (EoM, Full Period)",
+            "name": "calmar_ratio_full_period",
+            "type": "float"
+          },
+          {
+            "desc": "Maximum drawdown on end-of-month (EoM) monthly equity: min(dd_t) where dd_t = eq_t / cummax(eq_t) - 1 ≤ 0; reported as a negative decimal.",
+            "label": "Max Drawdown (EoM, Full Period)",
+            "name": "eom_max_drawdown_full_period",
+            "type": "float"
+          },
+          { 
+            "name": "eom_longest_underwater_months", 
+            "type": "int",
+            "label": "Longest Underwater (EoM, months)",
+            "desc": "Maximum drawdown on the Intramonth (path-level) equity: min(dd_t) along the path (UTC ordering); reported as a negative decimal." 
+          },
+          { 
+            "name": "eom_time_to_recover_months", 
+            "type": "int",
+            "label": "Time To Recover MaxDD (EoM, months)",
+            "desc": "Time to recover for the MaxDD on the EoM monthly equity: number of months from the trough to the first dd>=0, inclusive of the recovery month; if never recovered by period end, report NaN." 
+          },
+          {     
+            "name": "eom_months_since_maxdd_trough", 
+            "type": "int",
+            "label": "Months Since MaxDD Trough (EoM)",
+            "desc": "Months since the MaxDD trough on the EoM monthly equity: exclude the trough month and include the end month (last available month)." 
+          },
+          {
+            "name": "intramonth_max_drawdown_full_period",
+            "type": "float",
+            "label": "Max Drawdown (Intramonth, Full Period)",
+            "desc": "Maximum drawdown on the Intramonth (path-level) equity: min(dd_t) along the path (UTC ordering); reported as a negative decimal."
+          },
+
+          { 
+            "name": "intramonth_longest_underwater_months", 
+            "type": "int",
+            "label": "Longest Underwater (Intramonth, months)",
+            "desc": "Longest underwater spell on the Intramonth (path-level) equity measured from the last peak (dd=0) to the first recovery (dd>=0), inclusive of the recovery month; if no recovery, measure to the last negative observation. Duration in months = months_between(peak_ts, recovery_ts) + 1 when recovered; otherwise months_between(peak_ts, last_negative_ts)."
+          },
+
+          { 
+            "name": "intramonth_time_to_recover_months", 
+            "type": "int",
+            "label": "Time To Recover MaxDD (Intramonth, months)",
+            "desc": "Time to recover for the MaxDD on the Intramonth (path-level) equity: months_between(trough_ts, recovery_ts) + 1; if never recovered by period end, report NaN." 
+          },
+
+          { 
+            "name": "intramonth_months_since_maxdd_trough",
+            "type": "int",
+            "label": "Months Since MaxDD Trough (Intramonth)",
+            "desc": "Months since the MaxDD trough on the Intramonth (path-level) equity: months_between(trough_ts, last_ts). The trough month is excluded; the end month is included."
+          },
+          {
+            "desc": "Number of active months over the full period.",
+            "label": "Active Months — Count",
+            "name": "active_months_count",
+            "type": "int"
+          },
+          {
+            "desc": "Active months share = active_months_count / months.",
+            "label": "Active Months — Share",
+            "name": "active_months_share",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Annualized vol on active months (ddof=1)*sqrt(12).",
+            "label": "Volatility (Annualized, Active Months — Supp.)",
+            "name": "volatility_active_annualized",
+            "type": "float"
+          },
+          {
+            "desc": "Sharpe on active months; sqrt(12).",
+            "label": "Sharpe (Annualized, Active Months — Supp.)",
+            "name": "sharpe_active_annualized",
+            "type": "float"
+          },
+          {
+            "desc": "Sortino on active months; default target 0; sqrt(12).",
+            "label": "Sortino (Annualized, Active Months — Supp.)",
+            "name": "sortino_active_annualized",
+            "type": "float"
+          },
+          {
+            "desc": "Active-only CAGR: (Π(1+r_active))^(12/N_active)-1.",
+            "label": "CAGR (Active Months — Supp.)",
+            "name": "cagr_active",
+            "type": "float"
+          },
+          {
+            "desc": "Number of months with monthly_return<0 over the full period.",
+            "label": "Negative Months — Count (Full Period)",
+            "name": "negative_months_count_full_period",
+            "type": "int"
+          },
+          {
+            "desc": "Π(1 + monthly_return) − 1 over the full compounding series.",
+            "label": "Total Return (Full Period)",
+            "name": "total_return_full_period",
+            "type": "float"
+          },
+          {
+            "desc": "1 + total_return_full_period.",
+            "label": "Wealth Multiple (Full Period)",
+            "name": "wealth_multiple_full_period",
+            "type": "float"
+          },
+          {
+            "desc": "NAV0 * Π(1 + monthly_return) with NAV0=100000.",
+            "label": "Ending NAV (Full Period)",
+            "name": "ending_nav_full_period",
+            "type": "float"
+          },
+          {
+            "desc": "First month in the dataset (YYYY-MM UTC).",
+            "label": "Period Start (Month, UTC)",
+            "name": "period_start_month",
+            "type": "date"
+          },
+          {
+            "desc": "Last month in the dataset (YYYY-MM UTC).",
+            "label": "Period End (Month, UTC)",
+            "name": "period_end_month",
+            "type": "date"
+          },
+          {
+            "desc": "Months with monthly_return>0.",
+            "label": "Positive Months — Count (Full Period)",
+            "name": "positive_months_count_full_period",
+            "type": "int"
+          },
+          {
+            "label": "Best Month Return (Full Period)",
+            "name": "best_month_return_full_period",
+            "type": "float"
+          },
+          {
+            "label": "Worst Month Return (Full Period)",
+            "name": "worst_month_return_full_period",
+            "type": "float"
+          },
+          {
+            "label": "Mean Monthly Return (Full Period)",
+            "name": "mean_monthly_return_full_period",
+            "type": "float"
+          },
+          {
+            "label": "Median Monthly Return (Full Period)",
+            "name": "median_monthly_return_full_period",
+            "type": "float"
+          },
+          {
+            "label": "Zero Months — Count (Full Period)",
+            "name": "zero_months_count_full_period",
+            "type": "int"
+          },
+          {
+            "label": "Years — Covered (Full Period)",
+            "name": "years_covered",
+            "type": "int"
+          },
+          {
+            "label": "Best Calendar-Year Return (Full Period)",
+            "name": "best_year_return_calendar_full_period",
+            "type": "float"
+          },
+          {
+            "label": "Best Year (YYYY)",
+            "name": "best_year",
+            "type": "int"
+          },
+          {
+            "label": "Worst Calendar-Year Return (Full Period)",
+            "name": "worst_year_return_calendar_full_period",
+            "type": "float"
+          },
+          {
+            "label": "Worst Year (YYYY)",
+            "name": "worst_year",
+            "type": "int"
+          },
+          {
+            "desc": "Total number of trades over the full period.",
+            "name": "trade_count_full_period",
+            "type": "int"
+          }
+        ]
+      },
+      "monthly_returns.csv": {
+        "columns": [
+          {
+            "desc": "Calendar year (YYYY).",
+            "name": "year",
+            "type": "int"
+          },
+          {
+            "desc": "1–12.",
+            "name": "month",
+            "type": "int"
+          },
+          {
+            "desc": "Monthly return from EoM NAV; includes months with 0. (Compounding/realized-PnL: include all months; no-trade month with no NAV change => 0.)",
+            "label": "Monthly Return",
+            "name": "monthly_return",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "True if month has at least one trade (trade_count>0).",
+            "label": "Active Month",
+            "name": "active_month",
+            "type": "bool"
+          }
+        ]
+      },
+      "trades_full_period_summary.csv": {
+        "columns": [
+          {
+            "desc": "Total trade_count (full period).",
+            "name": "trade_count",
+            "type": "int"
+          },
+          {
+            "desc": "Share of R>0 among trades with R≠0; denominator excludes zero-R trades.",
+            "name": "win_rate",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "PF on sums; zeros (R=0) are excluded from both sums.",
+            "name": "profit_factor",
+            "type": "float"
+          },
+          {
+            "desc": "mean(R | R > +eps)",
+            "name": "average_winning_trade_r",
+            "type": "float"
+          },
+          {
+            "desc": "mean(R | R < -eps).",
+            "name": "average_losing_trade_r",
+            "type": "float"
+          },
+          {
+            "desc": "average_winning_trade_r / |average_losing_trade_r|.",
+            "name": "payoff_ratio",
+            "type": "float"
+          },
+          {
+            "desc": "Mean R.",
+            "name": "expectancy_mean_r",
+            "type": "float"
+          },
+          {
+            "desc": "Median R.",
+            "name": "expectancy_median_r",
+            "type": "float"
+          },
+          {
+            "desc": "Stdev R, ddof=1.",
+            "name": "r_std_dev",
+            "type": "float"
+          },
+          {
+            "desc": "Min R.",
+            "name": "r_min",
+            "type": "float"
+          },
+          {
+            "desc": "Max R.",
+            "name": "r_max",
+            "type": "float"
+          }
+        ]
+      },
+      "yearly_summary.csv": {
+        "columns": [
+          {
+            "desc": "Calendar year (YYYY).",
+            "name": "year",
+            "type": "int"
+          },
+          {
+            "desc": "Π(1+ret_m_year) - 1.",
+            "label": "Return (Calendar Year / YTD)",
+            "name": "annual_return_calendar",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Maximum drawdown on end-of-month (EoM) monthly equity within the calendar year (peak resets on Jan 1, UTC): min(dd_t); reported as a negative decimal.",
+            "name": "eom_max_drawdown_intra_year",
+            "label": "Max Drawdown (EoM, Year)",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Maximum drawdown on the Intramonth (path-level) equity within the calendar year (peak resets on Jan 1, UTC): min(dd_t); reported as a negative decimal.",
+            "name": "intramonth_max_drawdown_intra_year",
+            "label": "Max Drawdown (Intramonth, Year)",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Number of trade_count in the year.",
+            "name": "trade_count",
+            "type": "int"
+          },
+          {
+            "desc": "Share of R>0 among trades with R≠0; denominator excludes zero-R trades.",
+            "name": "win_rate",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "PF on sums within the year; zeros (R=0) are excluded from both sums.",
+            "name": "profit_factor",
+            "type": "float"
+          },
+          {
+            "desc": "Number of active months in the year (trade_count>0).",
+            "name": "active_months_count",
+            "type": "int"
+          },
+          {
+            "desc": "Active months share in the year = active_months_count/12.",
+            "name": "active_months_share",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Return computed on active months only (supplementary).",
+            "name": "annual_return_active",
+            "type": "float"
+          },
+          {
+            "desc": "Annualized vol on active months (ddof=1)*sqrt(12).",
+            "name": "volatility_active_annualized",
+            "type": "float"
+          },
+          {
+            "desc": "Sharpe on active months; rf_m if supplied; sqrt(12).",
+            "name": "sharpe_active_annualized",
+            "type": "float"
+          },
+          {
+            "desc": "Sortino on active months; default target 0; sqrt(12).",
+            "name": "sortino_active_annualized",
+            "type": "float"
+          },
+          {
+            "desc": "Active-only CAGR: (Π(1+r_active))^(12/N_active)-1.",
+            "name": "cagr_active",
+            "type": "float"
+          },
+          {
+            "desc": "True if months<12.",
+            "name": "insufficient_months",
+            "type": "bool"
+          },
+          {
+            "desc": "True if active_months_count < methodology.supplementary_active_only_metrics.min_active_months_for_metrics.",
+            "name": "insufficient_active_months",
+            "type": "bool"
+          },
+          {
+            "desc": "True if negative months < 2 (affects Sortino).",
+            "name": "insufficient_negative_months",
+            "type": "bool"
+          },
+          {
+            "desc": "True if trade_count < methodology.minimum_sample_policy.min_trades_per_year_warning.",
+            "name": "insufficient_trades",
+            "type": "bool"
+          },
+          {
+            "desc": "Annualized volatility within the calendar year (ddof=1)*sqrt(12).",
+            "label": "Volatility (Calendar Year, Annualized)",
+            "name": "volatility_annualized_year",
+            "type": "float"
+          },
+          {
+            "desc": "Sharpe Ratio within the calendar year; rf_m if supplied; sqrt(12).",
+            "label": "Sharpe (Calendar Year, Annualized)",
+            "name": "sharpe_ratio_annualized_year",
+            "type": "float"
+          },
+          {
+            "desc": "Sortino within the calendar year; default target 0; sqrt(12).",
+            "label": "Sortino (Calendar Year, Annualized)",
+            "name": "sortino_ratio_annualized_year",
+            "type": "float"
+          },
+          {
+            "desc": "annual_return_calendar / |eom_max_drawdown_intra_year|; Calmar-style ratio for the calendar year.",
+            "label": "Calmar Ratio (EoM, Calendar Year)",
+            "name": "calmar_ratio_year",
+            "type": "float"
+          },
+          {
+            "desc": "Number of months with monthly_return<0 in the calendar year.",
+            "label": "Negative Months — Count (Calendar Year)",
+            "name": "negative_months_in_year",
+            "type": "int"
+          },
+          {
+            "desc": "Number of monthly observations available in the calendar year (1..12).",
+            "label": "Months in Year — Available",
+            "name": "months_in_year_available",
+            "type": "int"
+          },
+          {
+            "desc": "True if months_in_year_available < 12 (partial year / YTD).",
+            "label": "YTD (Partial Year)",
+            "name": "is_ytd",
+            "type": "bool"
+          },
+          {
+            "desc": "Number of months with monthly_return>0 in the calendar year.",
+            "label": "Positive Months — Count (Calendar Year)",
+            "name": "positive_months_in_year",
+            "type": "int"
+          }
+        ]
+      }
+    },
+    "fixed_start_100k": {
+      "monthly_returns.csv": {
+        "columns": [
+          {
+            "desc": "Calendar year (YYYY).",
+            "name": "year",
+            "type": "int"
+          },
+          {
+            "desc": "1–12.",
+            "name": "month",
+            "type": "int"
+          },
+          {
+            "desc": "Monthly return inside the year; anchor 100k at year start.",
+            "label": "Monthly Return",
+            "name": "monthly_return",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "True if month has at least one trade (trade_count>0).",
+            "label": "Active Month",
+            "name": "active_month",
+            "type": "bool"
+          }
+        ]
+      },
+      "yearly_summary.csv": {
+        "columns": [
+          {
+            "desc": "Calendar year (YYYY).",
+            "name": "year",
+            "type": "int"
+          },
+          {
+            "desc": "Within-year Π(1+monthly_return) - 1.",
+            "label": "Return (Calendar Year / YTD)",
+            "name": "annual_return_calendar",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Maximum drawdown on end-of-month (EoM) monthly equity within the calendar year (peak resets on Jan 1, UTC): min(dd_t); reported as a negative decimal.",
+            "name": "eom_max_drawdown_intra_year",
+            "label": "Max Drawdown (EoM, Year)",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Maximum drawdown on the Intramonth (path-level) equity within the calendar year (peak resets on Jan 1, UTC): min(dd_t); reported as a negative decimal.",
+            "name": "intramonth_max_drawdown_intra_year",
+            "label": "Max Drawdown (Intramonth, Year)",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "Trades in the year.",
+            "label": "Trades — Count",
+            "name": "trade_count",
+            "type": "int"
+          },
+          {
+            "desc": "Share of R>0 among trades with R≠0; denominator excludes zero-R trades.",
+            "label": "Win Rate",
+            "name": "win_rate",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "PF on sums within the year; zeros (R=0) are excluded from both sums.",
+            "label": "Profit Factor",
+            "name": "profit_factor",
+            "type": "float"
+          },
+          {
+            "desc": "Number of active months in the year (trade_count>0).",
+            "label": "Active Months — Count",
+            "name": "active_months_count",
+            "type": "int"
+          },
+          {
+            "desc": "Active months share in the year = active_months_count/12.",
+            "label": "Active Months — Share",
+            "name": "active_months_share",
+            "type": "float",
+            "units": "decimal"
+          },
+          {
+            "desc": "True if months<12.",
+            "name": "insufficient_months",
+            "type": "bool"
+          },
+          {
+            "desc": "True if active_months_count < methodology.supplementary_active_only_metrics.min_active_months_for_metrics.",
+            "name": "insufficient_active_months",
+            "type": "bool"
+          },
+          {
+            "desc": "True if negative months < 2 (affects Sortino).",
+            "name": "insufficient_negative_months",
+            "type": "bool"
+          },
+          {
+            "desc": "True if trade_count < methodology.minimum_sample_policy.min_trades_per_year_warning.",
+            "name": "insufficient_trades",
+            "type": "bool"
+          },
+          {
+            "desc": "Number of months with monthly_return<0 in the calendar year.",
+            "label": "Negative Months — Count (Calendar Year)",
+            "name": "negative_months_in_year",
+            "type": "int"
+          },
+          {
+            "desc": "Number of monthly observations available in the calendar year (1..12).",
+            "label": "Months in Year — Available",
+            "name": "months_in_year_available",
+            "type": "int"
+          },
+          {
+            "desc": "True if months_in_year_available < 12 (partial year / YTD).",
+            "label": "YTD (Partial Year)",
+            "name": "is_ytd",
+            "type": "bool"
+          },
+          {
+            "desc": "Number of months with monthly_return>0 in the calendar year.",
+            "label": "Positive Months — Count (Calendar Year)",
+            "name": "positive_months_in_year",
+            "type": "int"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "active_month": "Boolean flag per month: True if at least one trade occurred in the calendar month (trade_count>0).",
+    "active_months_count": "Number of months with active_month=True within the aggregation scope (year or full period).",
+    "active_months_share": "Share of active months within the aggregation scope = active_months_count / total months in scope.",
+    "annual_return_active": "Annual Return (Active Months): product over active months only minus 1; supplementary.",
+    "annual_return_calendar": "Within-year return from monthly series: Π(1+ret_m_year) - 1.",
+    "average_losing_trade_r": "mean(R | R < -eps).",
+    "average_winning_trade_r": "mean(R | R > +eps).",
+    "best_month_return_full_period": "Best single monthly return over the full compounding period.",
+    "best_year": "Calendar year (YYYY) corresponding to best_year_return_calendar_full_period.",
+    "best_year_return_calendar_full_period": "Maximum calendar-year return observed over the full period (based on annual_return_calendar).",
+    "cagr_active": "Active-only CAGR: (Π(1+r_m_active))^(12/N_active) - 1; N_active is number of active months.",
+    "cagr_full_period": "(Π(1+monthly_return))^(12/N) - 1, where N is the number of months.",
+    "calmar_active": "Not defined. The Calmar ratio is reported only on the calendar series (Full Period and Calendar Year) using EoM drawdowns; do not compute for active months.",
+    "calmar_ratio_full_period": "Calmar Ratio (EoM, Full Period): cagr_full_period / |eom_max_drawdown_full_period| computed on the EoM monthly equity.",
+    "calmar_ratio_year": "Calmar Ratio (EoM, Calendar Year): annual_return_calendar / |eom_max_drawdown_intra_year|. If |eom_max_drawdown_intra_year| < eps_den: +Inf if annual_return_calendar > 0; −Inf if < 0; NaN if |annual_return_calendar| < eps_zero.",
+    "drawdown_curve_definition": "Define monthly equity curve eq_t = Π_{k≤t}(1+r_k). Monthly drawdown dd_t = eq_t / cummax(eq_t) - 1 (≤0). Underwater periods are contiguous spans with dd_t<0; a period ends when a new high is made.",
+    "ending_nav_full_period": "Ending NAV over the full period on the compounding track: NAV0 * product(1 + monthly_return). With NAV0=100000 (anchor).",
+    "expectancy_mean_r": "mean(R).",
+    "expectancy_median_r": "median(R).",
+    "insufficient_active_months": "Flag: True if active months are below methodology.supplementary_active_only_metrics.min_active_months_for_metrics for the scope.",
+    "insufficient_months": "Flag: True if number of months in scope is below the minimum for stable annualization (see methodology.minimum_sample_policy).",
+    "insufficient_negative_months": "Flag: True if number of negative-return months in scope is < 2 (Sortino undefined).",
+    "insufficient_trades": "Flag: True if trade_count in the calendar year is below methodology.minimum_sample_policy.min_trades_per_year_warning.",
+    "is_ytd": "Flag: True if months_in_year_available < 12 for the given calendar year (partial year / YTD).",
+    "intramonth_equity_path": "Path-level equity built from all available equity observations sorted by timestamp in UTC (stable, input order on ties). No resampling to month-end.",
+    "intramonth_drawdown_curve_definition": "Along the Intramonth (path-level) equity, define dd_t = equity_t / cummax(equity_t) - 1 with cummax taken over time (UTC).",
+    "intramonth_max_drawdown_full_period": "Minimum dd_t on the Intramonth path over the full period. Reported as a negative decimal.",
+    "intramonth_max_drawdown_intra_year": "Minimum dd_t on the Intramonth path within the calendar year; the peak resets on January 1 (UTC). Reported as a negative decimal.",
+    "intramonth_longest_underwater_months": "Longest underwater spell on the Intramonth path measured from the last peak (dd = 0) to the first recovery (dd >= 0), inclusive of the recovery. Duration in months = months_between(peak_ts, recovery_ts) + 1; if no recovery, measure to the last negative observation without +1.",
+    "intramonth_time_to_recover_months": "Time to recover for the MaxDD on the Intramonth path: months_between(trough_ts, recovery_ts) + 1. If recovery never occurs by period end, report NaN.",
+    "intramonth_months_since_maxdd_trough": "Full months from the MaxDD trough to the last available timestamp on the Intramonth path: months_between(trough_ts, last_ts). The trough month is excluded; the end month is included.",
+    "months_between": "Calendar month difference used for Intramonth durations: months_between(a, b) = (year_b - year_a) * 12 + (month_b - month_a). No +1 at the boundary unless explicitly stated by the metric.",
+    "peak_anchor_policy": "Underwater spells start at the most recent peak (dd = 0 / latest cummax) immediately preceding the first dd < 0 within the spell.",
+    "trough_tie_breaker_policy": "If the drawdown minimum occurs multiple times, select the earliest occurrence (first-in-time trough).",
+    "yearly_peak_reset_policy": "For all *_intra_year metrics (EoM and Intramonth), reset the peak at 00:00:00 UTC on January 1 of each calendar year.",
+    "eom_max_drawdown_full_period": "Maximum drawdown on end-of-month (EoM) monthly equity: min(dd_t) where dd_t = eq_t / cummax(eq_t) - 1 ≤ 0; reported as a negative decimal.",
+    "eom_max_drawdown_intra_year": "Maximum drawdown on end-of-month (EoM) monthly equity within the calendar year (peak resets on Jan 1, UTC): min(dd_t); reported as a negative decimal.",
+    "eom_time_to_recover_months": "Time to recover for the maximum drawdown on the end-of-month (EoM) monthly equity: number of months from the trough month to the first month with dd_t ≥ 0, inclusive of the recovery month; if recovery has not occurred by period_end_month, report NaN.",
+    "eom_longest_underwater_months": "Longest underwater spell on the EoM monthly equity measured from the most recent peak (dd=0) preceding the spell to the first recovery (dd_t ≥ 0), inclusive of the recovery month; if no recovery occurs, measure to the last month with dd_t < 0. Reported as integer months.",
+    "eom_months_since_maxdd_trough": "Months since the maximum drawdown trough on the EoM monthly equity: exclude the trough month and include the period end month (last available month). Reported as integer months.",
+    "mean_monthly_return_full_period": "Arithmetic mean of monthly returns over the full compounding period.",
+    "median_monthly_return_full_period": "Median of monthly returns over the full compounding period.",
+    "month": "Month key used in rolling CSVs as a month-anchored date (YYYY-MM-01 UTC). In monthly_returns.csv, the 'month' column is an integer 1–12 used together with 'year'.",
+    "monthly_return": "Monthly return from EoM NAV; decimal units; Months with no trade_count: monthly_return=0.",
+    "months": "Number of monthly observations over the full period.",
+    "months_in_year_available": "Number of monthly observations available in the calendar year (1..12).",
+    "negative_months_count_full_period": "Count of months with monthly_return < 0 over the full period.",
+    "negative_months_in_year": "Count of months with monthly_return < 0 within the calendar year.",
+    "payoff_ratio": "average_winning_trade_r / |average_losing_trade_r|.",
+    "period_end_month": "Last month in the dataset (month-anchored date, UTC).",
+    "period_start_month": "First month in the dataset (month-anchored date, UTC).",
+    "positive_months_count_full_period": "Count of months with monthly_return > 0 over the full period.",
+    "positive_months_in_year": "Count of months with monthly_return > 0 within the calendar year.",
+    "profit_factor": "PF = sum(R>0) / |sum(R<0)|; zeros (R=0) are excluded from both sums. Compute on sums (scale-invariant), not on counts.",
+    "r": "R = pnl_pct / risk_per_trade_pct (risk_per_trade_pct from runtime/parameters).",
+    "r_max": "max(R).",
+    "r_min": "min(R).",
+    "r_std_dev": "stdev(R, ddof=1).",
+    "sharpe_active_annualized": "Sharpe on active months only; (mean(r_m - rf_m)/stdev(r_m - rf_m, ddof=1))*sqrt(12).",
+    "sharpe_ratio_annualized_full_period": "(mean(r_m - rf_m) / stdev(r_m - rf_m, ddof=1)) * sqrt(12); rf=0 by default.",
+    "sharpe_ratio_annualized_year": "Sharpe Ratio (annualized) within a calendar year: (mean(r_m - rf_m) / stdev(r_m - rf_m, ddof=1)) * sqrt(12), where r_m are monthly returns of that year.",
+    "sortino_active_annualized": "Sortino on active months only; downside via min(r_m - t_m,0) with ddof=1; sqrt(12) annualization.",
+    "sortino_ratio_annualized_full_period": "Sortino Ratio (Annualized): Let monthly returns be r_m and target t_m. Numerator = mean(r_m - t_m). Denominator (downside deviation) = sqrt(sample_mean( min(r_m - t_m, 0)^2 )), ddof=1 on negatives. Annualization via sqrt(12): Sortino_ann = (mean(r_m - t_m) / downside_std_m) * sqrt(12). Default target t_m = 0. If an annual target t_ann is supplied (e.g., MAR or rf), use t_m = (1 + t_ann)^(1/12) - 1. Reporting policy: downside_std_m requires at least two negative monthly observations (ddof=1); if fewer than two negatives, Sortino is undefined and must be reported as NaN.",
+    "sortino_ratio_annualized_year": "Sortino Ratio (annualized) within a calendar year: target t_m per sortino_target_policy (default 0); downside uses min(r_m - t_m, 0) with ddof=1 on negatives; sqrt(12) annualization.",
+    "total_return_full_period": "Total return over the full period: product(1 + monthly_return) - 1, computed on the compounding monthly series.",
+    "trade_count": "Total number of executed trades within the aggregation scope of the file (calendar year or full period).",
+    "trade_count_full_period": "Total number of executed trades over the full period (all months).",
+    "volatility_active_annualized": "Annualized volatility computed only on active months; stdev(active r_m, ddof=1)*sqrt(12).",
+    "volatility_annualized_full_period": "stdev(monthly_return, ddof=1) * sqrt(12).",
+    "volatility_annualized_year": "Annualized volatility computed within a calendar year: stdev(monthly_return_in_year, ddof=1) * sqrt(12).",
+    "wealth_multiple_full_period": "Wealth multiple over the full compounding period: 1 + total_return_full_period.",
+    "win_rate": "win_rate = count(R>0) / count(R!=0); trades with R=0 are excluded from both numerator and denominator.",
+    "worst_month_return_full_period": "Worst single monthly return over the full compounding period.",
+    "worst_year": "Calendar year (YYYY) corresponding to worst_year_return_calendar_full_period.",
+    "worst_year_return_calendar_full_period": "Minimum calendar-year return observed over the full period (based on annual_return_calendar).",
+    "year": "Calendar year (YYYY) for yearly rows (UTC-based).",
+    "years_covered": "Number of calendar years represented in the dataset (count of distinct years with at least one month).",
+    "zero_months_count_full_period": "Number of months with monthly_return == 0 over the full period."
+  },
+  "generated_at_utc": "2025-09-17T23:32:10Z",
+  "metadata": {
+    "risk_profiles": {
+      "active_runtime_value": 0.01,
+      "available": [
+        "risk_1pct",
+        "risk_1_5pct"
+      ],
+      "default": "risk_1pct"
+    },
+    "sample_quality": {
+      "warnings": [
+        "Annualized metrics may be unstable if months < preferred_min_months_for_annualization.",
+        "Annual metrics flagged if months<12 (insufficient_months=true).",
+        "Active-only metrics flagged if active_months_count below threshold.",
+        "Sortino is undefined (NaN) if negative months < 2 (applies to full-period, yearly, and active-only variants)",
+        "Trade count warning if yearly trade_count < 12."
+      ]
+    },
+    "sortino_target_used": {
+      "annual": 0.0,
+      "monthly": 0.0,
+      "source": "methodology.sortino_target_policy",
+      "type": "default"
+    }
+  },
+  "methodology": 
+    {
+      "active_month_definition": "Active month = a calendar month with at least one trade (trade_count>0). This is the only criterion; do not infer it from monthly_return.",
+
+      "drawdown_curve": "Dual basis for drawdowns: (1) EoM (monthly grid) — build eq_t = Π(1 + r_m) with dd_t = eq_t / cummax(eq_t) - 1; (2) Intramonth (path-level) — sort equity points by UTC time, compute dd_t = equity_t / cummax(equity_t) - 1 along the path; convert durations to months via months_between.",
+      "drawdown_frequency_policy": "EoM metrics are computed strictly on the month-end grid (UTC). Intramonth metrics are computed on the full equity path (UTC) and durations are then converted to integer months using months_between. Max drawdown values are negative decimals; durations are integer months. Operationally, maximum drawdown is computed as min(dd_t) on the chosen grid/path; we report the dd value (negative), while DD magnitudes (e.g., |dd| quantiles) are reported as positive decimals.",
+
+      "ytd_flag_policy": "is_ytd = true only for the latest calendar year present if months_in_year_available < 12; false for prior years.",
+      "calmar_policy": "Calmar is NOT defined on the active-months subset. Do not compute or publish a Calmar ratio for active-only metrics. Rationale: Calmar pairs a return with a drawdown measured on the same continuous equity basis. The active-month subset is discontinuous and has no well-defined drawdown curve; mixing bases (e.g., CAGR_active with EoM MaxDD) is not permitted.",
+      "edge_cases": {
+        "sortino_ratio_annualized": "Downside deviation (ddof=1) needs ≥2 negative months. If count_neg<2 → Sortino = NaN (undefined).",
+        "maxdd_missing_year": "If no equity data for a year → intra-year MaxDD = NaN. If only one point and no lower value occurred → intra-year MaxDD = 0.",
+        "ttr_full_period": "Time-to-recover is NaN if the series has not reached dd≥0 after the MaxDD trough by the period end.",
+        "insufficient_data_flags": "insufficient_months = (months_in_year_available < 12); insufficient_active_months = (active_months_count < 12); insufficient_negative_months is set when Sortino cannot be computed; insufficient_trades = (trade_count < 12)."
+      },
+
+      "month_counting_policy": 
+      {
+        "ttr_includes_recovery": "Time-to-recover (TTR) includes the recovery month: EoM = rec_idx - trough_idx + 1; Intramonth = months_between(trough_ts, recovery_ts) + 1.",
+        "since_trough_excludes_trough": "Months since trough exclude the trough month and include the period end: EoM = (n - 1) - trough_idx; Intramonth = months_between(trough_ts, last_ts).",
+        "longest_underwater_includes_recovery": "The longest underwater stretch is measured peak → first recovery inclusive; if no recovery occurs, measure to the last negative observation. For Intramonth, use months_between(...)+1 only when recovery exists."
+      },
+      "underwater_anchor_policy": {
+        "peak_selection": "Underwater spells start at the most recent peak (dd = 0) before the spell.",
+        "trough_selection": "MaxDD trough is the first-in-time occurrence of the global dd minimum within the scope.",
+        "yearly_reset": "For *_intra_year metrics, reset the peak at 00:00:00 UTC on January 1."
+      }
+    },
+    "epsilons": {
+      "eps_den": 1e-12,
+      "eps_zero": 1e-12
+    },
+    "minimum_sample_policy": {
+      "cagr_min_months": 1,
+      "min_trades_per_year_warning": 12,
+      "preferred_min_months_for_annualization": 12,
+      "publish_under_min_months": "Compute if formula-defined and return result; also emit a warning flag in metadata.sample_quality.",
+      "sharpe_ratio_annualized_min_months": 2,
+      "sortino_ratio_annualized_min_negative_months": 2,
+      "volatility_annualized_min_months": 2
+    },
+    "monthly_returns_source": {
+      "compounding": {
+        "no_trade_months_policy": "Include all calendar months. For realized-PnL compounding, if there were no trades in a month and NAV did not change, set monthly_return=0. This keeps the institutional track continuous.",
+        "ret_m_formula": "monthly_return(m) = NAV_EoM(m) / NAV_EoM(m-1) - 1; for the first observed month use BoM anchor NAV=100000."
+      },
+      "generic": "End-of-month NAV; missing month-end values are ffilled to the month-end; Months with no trade_count: monthly_return=0."
+    },
+    "naming_conventions": {
+      "families": {
+        "active_only_supplementary": {
+          "description": "Supplementary metrics computed on months with trade activity only; not a replacement for calendar metrics.",
+          "display_tag": "Active Months (Supp.)"
+        },
+        "calendar_year_from_monthlies": {
+          "description": "Metrics computed strictly within each calendar year using that year's monthly returns; annualization via sqrt(12) where applicable.",
+          "display_tag": "Calendar Year"
+        },
+        "full_period_from_monthlies": {
+          "description": "Metrics computed over the entire available series of monthly returns; annualization via sqrt(12) where applicable.",
+          "display_tag": "Full Period"
+        }
+      },
+      "note_negative_months": "Negative months are reported per calendar year for both profiles, and additionally as a full-period audit metric for compounding.",
+      "ui_policy": "Always append the family display_tag to metric labels to avoid ambiguity (e.g., 'Sharpe (Annualized, Full Period)' vs 'Sharpe (Calendar Year, Annualized)').",
+      "ui_ytd_label_policy": "If is_ytd=True for a given year, append '— YTD' to metric labels in displays. E.g., 'Sharpe (Calendar Year, Annualized — YTD)'. Keys remain unchanged."
+    },
+    "nan_inf_display": {
+      "nan": "NaN",
+      "neg_inf": "-Inf",
+      "pos_inf": "Inf"
+    },
+    "nan_inf_policy": {
+      "calmar_ratio_full_period": "If |eom_max_drawdown_full_period| < eps_den: +Inf if cagr_full_period > 0; −Inf if cagr_full_period < 0; NaN if |cagr_full_period| < eps_zero.",
+      "generic_ratio": "If |den|<eps_den: return +Inf if num>0; -Inf if num<0; NaN if |num|<eps_zero.",
+      "payoff_ratio": "payoff = avg_win / |avg_loss|. If count_losses=0 and count_wins>0 ⇒ +Inf. If count_wins=0 and count_losses>0 ⇒ 0. If both zero ⇒ NaN.",
+      "profit_factor": "PF = sum(R>0) / |sum(R<0)|. If |sum(R<0)|<eps_den and sum(R>0)>eps_zero ⇒ +Inf. If sum(R>0)<eps_zero and |sum(R<0)|≥eps_den ⇒ 0. If both sums <eps_zero ⇒ NaN.",
+      "sharpe_ratio_annualized": "If stdev_m<eps_den: +Inf if mean_excess>0; -Inf if mean_excess<0; NaN if |mean_excess|<eps_zero.",
+      "sortino_ratio_annualized": "Requires ≥2 negative months (downside sample, ddof=1). If <2 negatives: NaN. If downside_std_m<eps_den with ≥2 negatives: +Inf if mean_excess>0; -Inf if mean_excess<0; NaN if |mean_excess|<eps_zero."
+    },
+    "no_oos_policy": "Out-of-sample (walk-forward) evaluation is not applicable: strategy parameters are fixed with no re-training/re-calibration. Present a single continuous Compounding track and yearly calendar metrics.",
+    "rebasing": {
+      "compounding": {
+        "anchor": "BoM of the first observed month: YYYY-MM-01 00:00:00 UTC; NAV=100000",
+        "notes": "Compounding track: monthly_return = NAV_EoM(m) / NAV_EoM(m-1) - 1; for the first month use the BoM anchor NAV=100000. EoM NAV is ffilled to month-end if needed. (was: Anchor NAV=100000 at t0-ε (just before first observation).)"
+      },
+      "fixed": "Anchor NAV=100000 at YYYY-01-01 00:00:00 UTC (anchor NAV=100000) for each calendar year."
+    },
+    "risk_parametrization": "R-metrics are scale-invariant given R = pnl_pct / risk_per_trade_pct. Switching risk_per_trade_pct between 1% and 1.5% changes NAV-based metrics (returns/vol/Sharpe/Sortino/MaxDD) but leaves R-based trade metrics comparable.",
+    "sharpe_rf": "Sharpe computed with rf=0 unless an rf series is supplied (then use effective monthly rf: (1+rf_ann)^(1/12)-1).",
+    "sortino_target": "Target return for Sortino set to 0 by default. If an annual target (MAR or rf) is supplied, convert to monthly: t_m = (1 + t_ann)^(1/12) - 1.",
+    "sortino_target_policy": {
+      "allowed_targets": [
+        "risk_free_ann",
+        "mar_ann"
+      ],
+      "conversion_to_monthly": "t_m = (1 + t_ann)^(1/12) - 1",
+      "default_target_ann": 0.0,
+      "default_target_label": "zero_annual_return",
+      "preference": "If both risk_free_ann and mar_ann are provided, prefer mar_ann (conservative) unless a mandate specifies rf."
+    },
+    "supplementary_active_only_metrics": {
+      "annualization": "Use N_active in exponents; e.g., CAGR_active = (Π(1+r_active))^(12/N_active) - 1.",
+      "applies_to": [
+        "compounding_eoy_soy_base_100k"
+      ],
+      "disclosure": "Active-only metrics are computed using months with active_month=True; not a replacement for calendar metrics.",
+      "does_not_apply_to": [
+        "fixed_start_100k"
+      ],
+      "min_active_months_for_metrics": 6,
+      "rationale": "In fixed-start profiles the equity resets annually to 100k; cross-year aggregation is not meaningful. Institutions typically avoid active-only Sharpe/Sortino/CAGR for fixed-start; keep only activity counts.",
+      "sharpe_target": "rf_m if supplied, else 0.",
+      "sortino_target": "t_m from sortino_target_policy (default 0); downside uses min(r_m - t_m, 0) with ddof=1 on negatives.",
+      "status": "supplementary_only"
+    },
+    "variance": "All standard deviations are sample (ddof=1).",
+    "yearly_annualization_policy": "Yearly risk metrics (vol/sharpe/sortino) are computed on the available months within the calendar year and annualized via sqrt(12). If months_in_year_available<12, set insufficient_months=True. Sortino remains undefined (NaN) if negative months < 2.",
+    "yearly_metrics_policy": {
+      "applies_to": [
+        "compounding_eoy_soy_base_100k"
+      ],
+      "metrics": [
+        "volatility_annualized_year",
+        "sharpe_ratio_annualized_year",
+        "sortino_ratio_annualized_year",
+        "calmar_ratio_year"
+      ],
+      "notes": "Computed strictly on the 12 monthly returns of each calendar year (or the available subset for partial years); inherits epsilons and NaN/Inf policy from methodology.nan_inf_policy; ddof=1."
+  },
+  "parameters": 
+  {
+    "drawdown_basis": "dual",
+    "risk_per_trade_pct": {
+      "allowed_values": [
+        0.01,
+        0.015
+      ],
+      "default": 0.01,
+      "desc": "Per-trade risk budget as a fraction of equity; switch between 0.01 (1%) and 0.015 (1.5%).",
+      "type": "float",
+      "unit": "fraction_of_equity"
+    }
+  },
+  "profiles": {
+    "risk_1_5pct": {
+      "runtime.risk_per_trade_pct": 0.015
+    },
+    "risk_1pct": {
+      "runtime.risk_per_trade_pct": 0.01
+    }
+  },
+  "rounding_policy": {
+    "currency_like": {
+      "applies_to": [
+        "ending_nav_full_period"
+      ],
+      "decimals": 0,
+      "rounding_mode": "half_up"
+    },
+    "percent_like": {
+      "applies_to_patterns": [
+        "*return*",
+        "annual_return_*",
+        "volatility_*",
+        "*drawdown*",
+        "*share*",
+        "win_rate",
+        "prob_*"
+      ],
+      "decimals": 4
+    },
+    "priority_order": [
+      "currency_like",
+      "sharpe_sortino_like",
+      "ratio_like",
+      "pvalue_like",
+      "percent_like"
+    ],
+    "pvalue_like": {
+      "applies_to_patterns": [
+        "*p_value*"
+      ],
+      "decimals": 3
+    },
+    "ratio_like": {
+      "applies_to_patterns": [
+        "*profit_factor*",
+        "*payoff*"
+      ],
+      "decimals": 2
+    },
+    "sharpe_sortino_like": {
+      "applies_to_patterns": [
+        "*sharpe*",
+        "*sortino*",
+        "*calmar*"
+      ],
+      "decimals": 2
+    }
+  },
+  "runtime": {
+    "compute_active_only_metrics": {
+      "compounding_eoy_soy_base_100k": true,
+      "fixed_start_100k": false
+    },
+    "risk_per_trade_pct": 0.01
+  },
+  "schema_id": "base_metrics",
+  "schema_title": "Core Metrics (Institutional Minimal Set)",
+  "units": {
+    "currency": "USD",
+    "returns": "decimal (0.012 = +1.2%)",
+    "risk_per_trade_pct": "decimal share of capital (e.g., 0.01 for 1%)",
+    "strict_R_classification": {
+      "eps": 1e-12,
+      "loss": "R < -eps",
+      "note": "Zero-R trades are excluded from the win/loss groups and from the PF denominator; for expectancy/std/min/max they are included as-is",
+      "win": "R > +eps"
+    },
+    "timezone": "UTC (all timestamps, anchors, and buckets)"
+  },
+  "version": "metrics-schema-1.0"
+}
